@@ -1,0 +1,25 @@
+model ServerIncompleteJob {
+  id         Int      @id @default(autoincrement())
+  createTime DateTime @default(now())
+}
+
+model File {
+  // When upload:
+  // 1. preserve object storage provider and id
+  // 2. insert File with referenceCount = 0, and ServerIncompleteJob for delete File if not uploaded, in a transaction, and commit the transaction
+  // 3. upload the file to its object storage
+  // 4. delete the ServerIncompleteJob inserted in 3.
+  // 5. reference File and increase referenceCount, in a transaction
+  // When reference: simply increment referenceCount
+  // When defererence: simply decrement referenceCount if referenceCount is 1, delete otherwise
+  // To delete (only if referenceCount is 1, in a transaction):
+  // 1. insert ServerIncompleteJob for delete file if the transaction fails, and delete the File, in the transaction
+  // 2. after the transaction ends, delete the file from the object storage, and delete the ServerIncompleteJob inserted in 1.
+  // When server restart:
+  // 1. process all ServerIncompleteJob (which will clean up both dangling files in object storage and dangling File rows)
+  id             Int      @id @default(autoincrement())
+  name           String
+  providerAndId  String
+  referenceCount Int
+  createdAt      DateTime @default(now())
+}
