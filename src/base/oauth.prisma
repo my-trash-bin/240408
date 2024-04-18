@@ -1,8 +1,9 @@
 model User {
-  id         Int      @id @default(autoincrement())
-  nickname   String   @unique
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
+  id         Int       @id @default(autoincrement())
+  nickname   String    @unique
+  createTime DateTime  @default(now())
+  updateTime DateTime  @updatedAt
+  deleteTime DateTime?
 
   oauthAccounts OAuthAccount[]
 }

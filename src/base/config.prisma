@@ -1,0 +1,7 @@
+model Config {
+  type  String
+  forId Int
+  value String
+
+  @@id([forId, type])
+}
